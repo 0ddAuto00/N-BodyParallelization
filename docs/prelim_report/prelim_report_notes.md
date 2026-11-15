@@ -19,18 +19,23 @@
 - [ ] Updated Milestone list
   - Complete when: Headers 1-4 have full bullet lists
 
+## 1. Tasks Completed - Include changelog version entry
 
-## 1. Tasks Completed - Include changelog version entry:
+## 2. Tasks In progress (On-schedule)
 
-## 2. Tasks In progress (On-schedule):
-
-## 3. Tasks In progress (Behind schedule):
+## 3. Tasks In progress (Behind schedule)
 
 ## 4. Changes to project timeline or scope
 
+- Add grid search of parameters (`.dt`, `.softening`) in `nbody.cfg` file to make sure energy is reasonably conserved for all runs. These values might depend on the number of bodies? (@Fady)
+
 ## 5. Specific challenges addressed in the project thus far
 
-## Guidance for visuals:
+- Parallel rowwise implementation cannot compute just an upper matrix because values need to be attibuted to both bodies. This version is not as comparable to sequential because it computes all possible combinations, not just an upper matrix.
+
+## Guidance for visuals
+
+- Speedup tests at number of bodies (`n`) = 256, 1024, 4096, up to 10^4
 
 **If you are improving the performance of an algorithm or application, a result
 may include:** a plot of response time vs. number of threads, a speedup plot, number of cache misses
