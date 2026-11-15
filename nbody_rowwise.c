@@ -172,17 +172,19 @@ static void compute_accelerations(Body *b, size_t n, const Config *cfg)
         b[k].acc = (Vec3){0, 0, 0};
 
 //each thread gets a row, j is defined within the inner loop
-# pragma omp parallel for shared(b, n, cfg) private(i) schedule(dynamic)
+# pragma omp parallel for shared(b, n, cfg) private(i) schedule(static)
     for (i = 0; i < n; i++) {
-        for (size_t j = i + 1; j < n; j++) { //start at diagonal
+        for (size_t j = 0; j < n; j++) { //No longer start at diagonal
+            if(j == i) continue;
             Vec3   d      = vec3_sub(b[j].pos, b[i].pos);
             double r2     = vec3_dot(d, d) + eps2;
             double inv_r  = 1.0 / sqrt(r2);
             double inv_r3 = inv_r * inv_r * inv_r;
 
-            /* Newton's third law: compute each pair once. */ //THIS WILL NOT WORK IN PARALLEL
+            // Compute all pairs individually, parallel implementation will
+            // overlap in accessing the j index -> not thread safe
             b[i].acc = vec3_add(b[i].acc, vec3_scale(d,  cfg->g * b[j].mass * inv_r3));
-            b[j].acc = vec3_add(b[j].acc, vec3_scale(d, -cfg->g * b[i].mass * inv_r3));
+            //b[j].acc = vec3_add(b[j].acc, vec3_scale(d, -cfg->g * b[i].mass * inv_r3));
         }
     }
 }
