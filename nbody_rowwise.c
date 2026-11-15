@@ -9,7 +9,7 @@
  *  Each body gets a small random velocity (components in ±0.05), 0 initial acceleration,
     and mass 1/n, so total mass is always 1
  *  
- * Compile: gcc -fopenmp nbody_rowwise.c -o nbody_rowwise -lm
+ * Compile: gcc -O2 -fopenmp nbody_rowwise.c -o nbody_rowwise -lm
  * Usage: ./nbody_rowwise [config_file]
  */
 
