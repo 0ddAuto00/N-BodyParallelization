@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <omp.h>
 #include <time.h>
+#include <unistd.h>
 
 #define DEFAULT_CONFIG_PATH "nbody.cfg"
 
@@ -65,8 +66,17 @@ bool create_bodies_arr(Config* cfg);
 // Function to check if config/default values were loaded successfully
 bool check_config(int argc, char** argv, Config *cfg);
 
+// Function to initialize number of threads and array sizes for each implementation to store time taken for each thread number
+bool init_times_arr_sizes(Config cfg);
+
 // Function to print elapsed time
-void time_elapsed(clock_t start, clock_t end, Implementation currentImp);
+void time_elapsed(Implementation currentImp);
+
+// Function to output time array results to csv
+void write_to_csv(Config cfg);
+
+// Function to run a python script that plots csv file results
+void plot_csv();
 
 /* ---- vector helpers ---------------------------------------------------- */
 inline Vec3 vec3_add(Vec3 a, Vec3 b) { return (Vec3) { a.x + b.x, a.y + b.y, a.z + b.z }; }

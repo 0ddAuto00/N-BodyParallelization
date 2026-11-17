@@ -11,7 +11,14 @@ so each version stays unique.
 If no PR is attatched, remove the `PR#NN` notation. Major changes should get at
 least one other set of eyes before the PR lands.
 
+## 2026.11.17
+
+- Add `plot_results.py` that plots `results.csv` on two graphs showing runtime and speedup comparisons
+- `nbody.c` now creates `results.csv`, then runs `plot_results.py` right after. All you have to do is \
+ run `nbody.exe` and it does everything for you
+
 ## 2026.11.16
+
 - Add `sequential.c/h`, `rowwise.c/h`, and `tiled.c/h` files to seperate implementations to their own files
 - `nbody.c` now calls from the previously listed files to run and calculate time elapsed for implementations
 - Changed `Makefile` to include all the new files and read/write to the correct folders
