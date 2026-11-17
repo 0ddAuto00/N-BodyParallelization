@@ -7,10 +7,10 @@
  * Usage: ./nbody [config_file]      (default: nbody.cfg, then built-in defaults)
  */
 
-#include "nbody.h"
-#include "sequential.h"
-#include "rowwise.h"
-#include "tiled.h"
+#include "headers/nbody.h"
+#include "headers/sequential.h"
+#include "headers/rowwise.h"
+#include "headers/tiled.h"
 
 Body* bodies;
 size_t n;
