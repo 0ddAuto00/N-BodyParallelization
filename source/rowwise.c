@@ -17,28 +17,39 @@
 
 void implement_rowwise(Config cfg)
 {
-    if (cfg.threads > 0) omp_set_num_threads(cfg.threads);
+    for (size_t thread_t = 1; thread_t <= (size_t)cfg.threads; thread_t++)
+    {
+        // Set thread count for omp parallelization
+        if (cfg.threads > 0) omp_set_num_threads(thread_t);
+    
+        // Initialize body locations and their forces
+        srand(cfg.seed);
+        init_bodies(bodies, n);
+        compute_accelerations_rowwise(bodies, n, &cfg);
+        double e0 = total_energy_rowwise(bodies, n, &cfg);
+        printf("\nN=%zu steps=%zu dt=%g softening=%g G=%g seed=%u  E0=%.9e  Threads=%lld",
+            n, cfg.num_steps, cfg.dt, cfg.softening, cfg.g, cfg.seed, e0, thread_t);
 
-    // Initialize body locations and their forces
-    srand(cfg.seed);
-    init_bodies(bodies, n);
-    compute_accelerations_rowwise(bodies, n, &cfg);
-    double e0 = total_energy_rowwise(bodies, n, &cfg);
-    printf("N=%zu steps=%zu dt=%g softening=%g G=%g seed=%u  E0=%.9e\n",
-        n, cfg.num_steps, cfg.dt, cfg.softening, cfg.g, cfg.seed, e0);
 
+        double elapsed = 0.0;
+        // Calculate new energies based on steps
+        for (size_t s = 1; s <= cfg.num_steps; s++) {
+            double t0 = omp_get_wtime();
+            step_leapfrog_rowwise(bodies, n, &cfg);
+            elapsed += omp_get_wtime() - t0;
 
-    // Calculate new energies based on steps
-    for (size_t s = 1; s <= cfg.num_steps; s++) {
-        step_leapfrog_rowwise(bodies, n, &cfg);
-
-        if (s % cfg.report_every == 0 || s == cfg.num_steps) {
-            double e = total_energy_rowwise(bodies, n, &cfg);
-            printf("step %6zu  E=%.9e  dE/E0=%.3e\n", s, e, (e - e0) / fabs(e0));
+            // Optional output to check if results are correct. Compare with other implementations
+            /*
+            if (s % cfg.report_every == 0 || s == cfg.num_steps) {
+                double e = total_energy_rowwise(bodies, n, &cfg);
+                printf("step %6zu  E=%.9e  dE/E0=%.3e\n", s, e, (e - e0) / fabs(e0));
+            }
+            */
         }
+
+        rowTimes[thread_t - 1] = elapsed;
     }
 
-    printf("\n");
 }
 
 

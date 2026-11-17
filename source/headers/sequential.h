@@ -5,6 +5,8 @@
 
 extern size_t n;
 extern Body* bodies;
+extern double start, end;
+extern double* seqTimes, * rowTimes, * tiledTimes;
 
 void compute_accelerations(Body* b, size_t n, const Config* cfg);
 

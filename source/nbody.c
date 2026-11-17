@@ -12,37 +12,39 @@
 #include "headers/rowwise.h"
 #include "headers/tiled.h"
 
+#define PLOT_SCRIPT "source/plot_results.py"
+#define CSV_PATH    "docs/prelim_report/results.csv"
+
 Body* bodies;
 size_t n;
+double start, end;
+double *seqTimes, *rowTimes, *tiledTimes;
 
 /* ---- main -------------------------------------------------------------- */
 
 int main(int argc, char** argv)
 {
     Config cfg = config_defaults();
-    clock_t start, end;
 
     if (!check_config(argc, argv, &cfg)) { return EXIT_FAILURE; }
-    if (!create_bodies_arr(&cfg)) { return EXIT_FAILURE; }
+    if (!create_bodies_arr(&cfg))        { return EXIT_FAILURE; }
+    if (!init_times_arr_sizes(cfg))      { return EXIT_FAILURE; }
 
 
-    start = clock();
     implement_sequential(cfg);
-    end = clock();
-    time_elapsed(start, end, SEQ);
+    time_elapsed(SEQ);
 
 
-    start = clock();
     implement_rowwise(cfg);
-    end = clock();
-    time_elapsed(start, end, ROW);
+    time_elapsed(ROW);
 
     
-    start = clock();
     implement_tiled(cfg);
-    end = clock();
-    time_elapsed(start, end, TILED);
+    time_elapsed(TILED);
 
+
+    write_to_csv(cfg);
+    plot_csv();
 
     free(bodies);
     return EXIT_SUCCESS;
@@ -182,10 +184,19 @@ bool create_bodies_arr(Config* cfg)
     return true;
 }
 
-void time_elapsed(clock_t start, clock_t end, Implementation currentImp)
+bool init_times_arr_sizes(Config cfg)
 {
-    double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    if (cfg.threads <= 0) return false;
+    
+    seqTimes   = malloc(cfg.threads * sizeof(double));
+    rowTimes   = malloc(cfg.threads * sizeof(double));
+    tiledTimes = malloc(cfg.threads * sizeof(double));
 
+    return true;
+}
+
+void time_elapsed(Implementation currentImp)
+{
     const char* impStr;
     switch (currentImp)
     {
@@ -202,5 +213,59 @@ void time_elapsed(clock_t start, clock_t end, Implementation currentImp)
         impStr = "Unknown";
     }
 
-    printf("CPU time used for %s: %f seconds\n\n", impStr, cpu_time_used);
+    printf("\n");
+    for (size_t i = 0; i < sizeof(seqTimes); i++)
+    {
+        switch (currentImp)
+        {
+        case SEQ:
+            printf("\nCPU time used for %s with %lld threads: %f seconds", impStr, i + 1, seqTimes[i]);
+            break;
+        case ROW:
+            printf("\nCPU time used for %s with %lld threads: %f seconds", impStr, i + 1, rowTimes[i]);
+            break;
+        case TILED:
+            printf("\nCPU time used for %s with %lld threads: %f seconds", impStr, i + 1, tiledTimes[i]);
+            break;
+        default:
+            impStr = "Unknown";
+        }
+    }
+    printf("\n");
+    
+}
+
+void write_to_csv(Config cfg)
+{
+    const char* path = "docs/prelim_report/results.csv";
+
+    FILE* fp = fopen(path, "w");
+    if (!fp) {
+        perror("write_to_csv: could not open results.csv");
+        return;
+    }
+
+    fprintf(fp, "threads,sequential,rowwise,tiled\n");
+
+    for (int t = 1; t <= cfg.threads; t++) {
+        fprintf(fp, "%d,%.9f,%.9f,%.9f\n",
+            t,
+            seqTimes[t - 1],
+            rowTimes[t - 1],
+            tiledTimes[t - 1]);
+    }
+
+    fclose(fp);
+    printf("Results written to %s\n", path);
+}
+
+void plot_csv()
+{
+    char cmd[512];
+    snprintf(cmd, sizeof cmd, "python3 \"%s\" \"%s\"", PLOT_SCRIPT, CSV_PATH);
+
+    int rc = system(cmd);
+    if (rc != 0) {
+        fprintf(stderr, "plot_csv: command failed (exit status %d): %s\n", rc, cmd);
+    }
 }
