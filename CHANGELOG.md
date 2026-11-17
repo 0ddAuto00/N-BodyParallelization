@@ -11,6 +11,14 @@ so each version stays unique.
 If no PR is attatched, remove the `PR#NN` notation. Major changes should get at
 least one other set of eyes before the PR lands.
 
+## 2026.11.16
+- Add `sequential.c/h`, `rowwise.c/h`, and `tiled.c/h` files to seperate implementations to their own files
+- `nbody.c` now calls from the previously listed files to run and calculate time elapsed for implementations
+- Changed `Makefile` to include all the new files and read/write to the correct folders
+- Add `source\` directory containing .c files
+  - Add `headers\` directory containing .h files
+- Add `object\` directory containing .o files
+
 ## 2026.11.15
 
 - Add `docs/` directory for building reports and sharing related notes.
