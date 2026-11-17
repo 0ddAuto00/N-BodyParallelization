@@ -1,10 +1,11 @@
 CC      ?= cc
 TARGET  := nbody
-SRCS    := nbody.c
+SRCS    := nbody.c sequential.c rowwise.c tiled.c
 OBJS    := $(SRCS:.c=.o)
 
-CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -O2
+CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -O2 -fopenmp
 LDLIBS  := -lm
+LDFLAGS := -fopenmp
 
 # Pass extra flags on the command line, e.g. `make CFLAGS_EXTRA="-march=native -ffast-math"`
 CFLAGS  += $(CFLAGS_EXTRA)
@@ -20,7 +21,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Debug build with sanitizers
-debug: CFLAGS := -std=c11 -Wall -Wextra -Wpedantic -O0 -g -fsanitize=address,undefined
+debug: CFLAGS := -std=c11 -Wall -Wextra -Wpedantic -O0 -g -fopenmp -fsanitize=address,undefined
 debug: LDFLAGS += -fsanitize=address,undefined
 debug: clean $(TARGET)
 

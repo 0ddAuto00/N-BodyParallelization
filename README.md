@@ -1,27 +1,31 @@
 # N-BodyParallelization
-This program will go over the implementation of the N-body problem. We will be showcasing the execution times of
-sequential, all-tiled pairs (our implementation), and other popular algorithms such as the Barnes-Hut algorithm.
+
+This program will go over the implementation of the N-body problem. We will be showcasing the all-tiled pairs implementation in comparison to a both a sequential and parallel rowwise implementation. Parallel efficiency will be evaluated at multiple numbers of bodies to assess speedup as the system grows.
 
 ## Installation
+
 Run the following command in a command line from a local directory:
 
 `git clone https://github.com/0ddAuto00/N-BodyParallelization`
 
 You might be prompted to login with your github credentials.
 
-## Running the Program
-By default the program comes with a .exe that you can run by double-clicking it.
+## Running the Programs
+
+By default, the sequential program comes with a .exe that you can run by double-clicking it.
 
 You can also run it through a command prompt through either `nbody` or `./nbody`
 
 ## Editing the Program
-If changes are made to the codebase, then you need to make a new executable.
 
-All you have to do is type in `make` in the command line within the directory of the codebase.
+If changes are made to the codebase, a new executable is needed.
 
-To edit variables, open the *nbody.cfg* and change the values of each variable. Do not edit the variable names.
+Any of the .c and .h files can be edited. Once edited:
 
-## Progress
+- run `make` in the command line within the directory of the codebase.
 
-Right now the program only has a sequential implementation that outputs energy dissipation over a period of steps.
+To edit variables, open `nbody.cfg` to change the values of each variable. Do not edit the variable names.
 
+## Progress and Reports
+
+Updates and status of current version can be found in `CHANGELOG.md`. Prose documents with reports of findings and methodology can be found in `docs/`.
