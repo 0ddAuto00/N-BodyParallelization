@@ -16,13 +16,11 @@ By default, the sequential program comes with a .exe that you can run by double-
 
 You can also run it through a command prompt through either `nbody` or `./nbody`
 
-The `nbody_rowwise.c` parallel rowwise implementation can be compiled with `gcc -O2 -fopenmp nbody_rowwise.c -o nbody_rowwise -lm` and run with `./nbody_rowwise [config_file]`
-
 ## Editing the Program
 
 If changes are made to the codebase, a new executable is needed.
 
-For `nbody.c` :
+Any of the .c and .h files can be edited. Once edited:
 
 - run `make` in the command line within the directory of the codebase.
 
