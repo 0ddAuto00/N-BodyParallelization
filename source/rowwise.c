@@ -11,7 +11,7 @@
     and mass 1/n, so total mass is always 1
  */
 
-#include "rowwise.h"
+#include "headers/rowwise.h"
 
 /* ---- main implementation ------------------------------------------------- */
 

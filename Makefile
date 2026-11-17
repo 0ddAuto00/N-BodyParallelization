@@ -1,9 +1,11 @@
 CC      ?= cc
 TARGET  := nbody
-SRCS    := nbody.c sequential.c rowwise.c tiled.c
-OBJS    := $(SRCS:.c=.o)
+SRCDIR  := source
+OBJDIR  := object
+SRCS    := $(wildcard $(SRCDIR)/*.c)
+OBJS    := $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
-CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -O2 -fopenmp
+CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -O2 -fopenmp -I$(SRCDIR)
 LDLIBS  := -lm
 LDFLAGS := -fopenmp
 
@@ -17,11 +19,14 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
-%.o: %.c
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+$(OBJDIR):
+	mkdir -p $@
+
 # Debug build with sanitizers
-debug: CFLAGS := -std=c11 -Wall -Wextra -Wpedantic -O0 -g -fopenmp -fsanitize=address,undefined
+debug: CFLAGS := -std=c11 -Wall -Wextra -Wpedantic -O0 -g -fopenmp -fsanitize=address,undefined -I$(SRCDIR)
 debug: LDFLAGS += -fsanitize=address,undefined
 debug: clean $(TARGET)
 
@@ -29,4 +34,4 @@ run: $(TARGET)
 	./$(TARGET) nbody.cfg
 
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -rf $(OBJDIR) $(TARGET)

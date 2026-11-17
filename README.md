@@ -12,13 +12,16 @@ You might be prompted to login with your github credentials.
 
 ## Running the Programs
 
-By default, the sequential program comes with a .exe that you can run by double-clicking it.
+By default, the entire program comes with a .exe that you can run by double-clicking it.
 
 You can also run it through a command prompt through either `nbody` or `./nbody`
 
 ## Editing the Program
 
 If changes are made to the codebase, a new executable is needed.
+
+ - All .c files are found in the `📁 source/` folder
+ - All .h files are found in the `📁 source/headers/` folder
 
 Any of the .c and .h files can be edited. Once edited:
 
@@ -28,4 +31,4 @@ To edit variables, open `nbody.cfg` to change the values of each variable. Do no
 
 ## Progress and Reports
 
-Updates and status of current version can be found in `CHANGELOG.md`. Prose documents with reports of findings and methodology can be found in `docs/`.
+Updates and status of current version can be found in `CHANGELOG.md`. Prose documents with reports of findings and methodology can be found in `📁 docs/`.

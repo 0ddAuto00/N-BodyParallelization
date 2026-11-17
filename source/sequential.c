@@ -4,7 +4,7 @@
 */
 
 
-#include "sequential.h"
+#include "headers/sequential.h"
 
 /* ---- main implementation ------------------------------------------------- */
 
