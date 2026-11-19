@@ -23,14 +23,14 @@ with open(csv_path, newline="") as f:
 # Speedup relative to the sequential baseline (first sequential measurement)
 base = seq[0]
 row_speedup = [base / t for t in row]
-# tiled_speedup = [base / t for t in tiled]
+tiled_speedup = [base / t for t in tiled]
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.5))
 
 # Runtime
 ax1.plot(threads, seq, "k--", label="Sequential")
 ax1.plot(threads, row, "o-", label="Rowwise")
-# ax1.plot(threads, tiled, "s-", label="Tiled")
+ax1.plot(threads, tiled, "s-", label="Tiled")
 ax1.set_xlabel("Threads")
 ax1.set_ylabel("Time (s)")
 ax1.set_title("Runtime vs. threads")
@@ -41,7 +41,7 @@ ax1.legend()
 # Speedup
 ax2.plot(threads, threads, "k--", label="Ideal")
 ax2.plot(threads, row_speedup, "o-", label="Rowwise")
-# ax2.plot(threads, tiled_speedup, "s-", label="Tiled")
+ax2.plot(threads, tiled_speedup, "s-", label="Tiled")
 ax2.set_xlabel("Threads")
 ax2.set_ylabel("Speedup (vs. sequential)")
 ax2.set_title("Speedup vs. threads")
