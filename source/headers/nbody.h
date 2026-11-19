@@ -43,6 +43,7 @@ typedef struct {
     double       g;
     unsigned int seed;
     int          threads;
+    int          avg_over;
 } Config;
 
 // Function to set variable defaults incase config file not found

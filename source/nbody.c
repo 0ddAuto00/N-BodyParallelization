@@ -33,10 +33,9 @@ int main(int argc, char** argv)
 
     implement_sequential(cfg);
     time_elapsed(SEQ);
-
-
+    
     implement_rowwise(cfg);
-    time_elapsed(ROW);
+    time_elapsed(ROW);        
 
     
     implement_tiled(cfg);
@@ -64,6 +63,7 @@ Config config_defaults(void)
         .g            = 1.0,
         .seed         = 42,
         .threads      = 1,
+        .avg_over     = 5,
     };
 }
 
@@ -189,8 +189,9 @@ bool init_times_arr_sizes(Config cfg)
     if (cfg.threads <= 0) return false;
     
     seqTimes   = malloc(cfg.threads * sizeof(double));
-    rowTimes   = malloc(cfg.threads * sizeof(double));
+    rowTimes   = malloc(cfg.avg_over * sizeof(double));
     tiledTimes = malloc(cfg.threads * sizeof(double));
+
 
     return true;
 }
