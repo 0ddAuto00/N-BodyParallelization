@@ -21,17 +21,28 @@
 
 ## 1. Tasks Completed - Include changelog version entry
 
+- Config style setup and modularization
+- Config Validation
+- timing scripts
+
 ## 2. Tasks In progress (On-schedule)
 
+- Rowwise implementation, ran into a race condition
+- Implementation of tiled
+
 ## 3. Tasks In progress (Behind schedule)
+
+- Debugging of rowwise
 
 ## 4. Changes to project timeline or scope
 
 - Add grid search of parameters (`.dt`, `.softening`) in `nbody.cfg` file to make sure energy is reasonably conserved for all runs. These values might depend on the number of bodies? (@Fady)
+- Add averaging of times rather than a single time
 
 ## 5. Specific challenges addressed in the project thus far
 
-- Parallel rowwise implementation cannot compute just an upper matrix because values need to be attibuted to both bodies. This version is not as comparable to sequential because it computes all possible combinations, not just an upper matrix.
+- Parallel rowwise implementation cannot compute just an upper matrix because values need to be attibuted to both bodies. This version is not as comparable to sequential because it computes all possible combinations, not just an upper matrix. 
+- Played with the idea of it being a stencil application but determined this would not be comparable directly to the tiled implementation and is outside proposal scope
 
 ## Guidance for visuals
 
