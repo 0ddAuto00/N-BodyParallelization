@@ -71,7 +71,7 @@ bool check_config(int argc, char** argv, Config *cfg);
 bool init_times_arr_sizes(Config cfg);
 
 // Function to print elapsed time
-void time_elapsed(Implementation currentImp);
+void time_elapsed(Implementation currentImp, Config cfg);
 
 // Function to output time array results to csv
 void write_to_csv(Config cfg);

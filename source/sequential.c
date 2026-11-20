@@ -12,32 +12,36 @@ void implement_sequential(Config cfg)
 {
     for (size_t thread_t = 1; thread_t <= (size_t)cfg.threads; thread_t++)
     {
-        // Initialize body locations and their forces
-        srand(cfg.seed);
-        init_bodies(bodies, n);
-        compute_accelerations(bodies, n, &cfg);
-        double e0 = total_energy(bodies, n, &cfg);
-        printf("\nN=%zu steps=%zu dt=%g softening=%g G=%g seed=%u  E0=%.9e",
-            n, cfg.num_steps, cfg.dt, cfg.softening, cfg.g, cfg.seed, e0);
-
-
         double elapsed = 0.0;
-        // Calculate new energies based on steps
-        for (size_t s = 1; s <= cfg.num_steps; s++) {
-            double t0 = omp_get_wtime();
-            step_leapfrog(bodies, n, &cfg);
-            elapsed += omp_get_wtime() - t0;
 
-            // Optional output to check if results are correct. Compare with other implementations
-            /*
-            if (s % cfg.report_every == 0 || s == cfg.num_steps) {
-                double e = total_energy(bodies, n, &cfg);
-                printf("step %6zu  E=%.9e  dE/E0=%.3e\n", s, e, (e - e0) / fabs(e0));
+        for (int run_number = 0; run_number < cfg.avg_over; run_number++)
+        {
+            // Initialize body locations and their forces
+            srand(cfg.seed);
+            init_bodies(bodies, n);
+            compute_accelerations(bodies, n, &cfg);
+            double e0 = total_energy(bodies, n, &cfg);
+            printf("\nN=%zu steps=%zu dt=%g softening=%g G=%g seed=%u  E0=%.9e",
+                n, cfg.num_steps, cfg.dt, cfg.softening, cfg.g, cfg.seed, e0);
+
+
+            // Calculate new energies based on steps
+            for (size_t s = 1; s <= cfg.num_steps; s++) {
+                double t0 = omp_get_wtime();
+                step_leapfrog(bodies, n, &cfg);
+                elapsed += omp_get_wtime() - t0;
+
+                // Optional output to check if results are correct. Compare with other implementations
+                /*
+                if (s % cfg.report_every == 0 || s == cfg.num_steps) {
+                    double e = total_energy(bodies, n, &cfg);
+                    printf("step %6zu  E=%.9e  dE/E0=%.3e\n", s, e, (e - e0) / fabs(e0));
+                }
+                */
             }
-            */
         }
 
-        seqTimes[thread_t - 1] = elapsed;
+        seqTimes[thread_t - 1] = elapsed / (double)cfg.avg_over;
     }
 
 }

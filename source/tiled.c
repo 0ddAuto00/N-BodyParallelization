@@ -7,7 +7,7 @@
 #include "headers/tiled.h"
 
 #ifndef TILE_P
-#define TILE_P 64   /* p: rows per block and columns per tile. Tune: 32..256 */
+#define TILE_P 32   /* p: rows per block and columns per tile. Tune: 32..256 */
 #endif
 
 /* `omp simd` needs OpenMP 4.0+. MSVC only has it with /openmp:experimental. */
@@ -72,7 +72,7 @@ void implement_tiled(Config cfg)
 
 /* ---- force computation ------------------------------------------------- */
 
-static void pack_positions_tiled(const Body* b, size_t n)
+void pack_positions_tiled(const Body* b, size_t n)
 {
     if (n > g_cap) {
         free(g_pos);
@@ -96,7 +96,7 @@ static void pack_positions_tiled(const Body* b, size_t n)
  * bi bodies of the current block. This is tile_calculation() +
  * bodyBodyInteraction() from the paper. Each body j is broadcast across all
  * rows (i), exactly like the shared-memory broadcast on the GPU. */
-static inline void tile_calculation_tiled(
+inline void tile_calculation_tiled(
     const double* tile, size_t bj,
     const double* xi, const double* yi, const double* zi,
     double* ax, double* ay, double* az,

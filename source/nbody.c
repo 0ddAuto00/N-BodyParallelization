@@ -215,7 +215,7 @@ void time_elapsed(Implementation currentImp, Config cfg)
     }
 
     printf("\n");
-    for (size_t i = 0; i < cfg.threads; i++)
+    for (size_t i = 0; i < (size_t)cfg.threads; i++)
     {
         switch (currentImp)
         {
