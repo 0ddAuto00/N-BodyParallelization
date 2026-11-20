@@ -32,14 +32,14 @@ int main(int argc, char** argv)
 
 
     implement_sequential(cfg);
-    time_elapsed(SEQ);
+    time_elapsed(SEQ, cfg);
     
     implement_rowwise(cfg);
-    time_elapsed(ROW);        
+    time_elapsed(ROW, cfg);        
 
     
     implement_tiled(cfg);
-    time_elapsed(TILED);
+    time_elapsed(TILED, cfg);
 
 
     write_to_csv(cfg);
@@ -189,14 +189,14 @@ bool init_times_arr_sizes(Config cfg)
     if (cfg.threads <= 0) return false;
     
     seqTimes   = malloc(cfg.threads * sizeof(double));
-    rowTimes   = malloc(cfg.avg_over * sizeof(double));
+    rowTimes   = malloc(cfg.threads * sizeof(double));
     tiledTimes = malloc(cfg.threads * sizeof(double));
 
 
     return true;
 }
 
-void time_elapsed(Implementation currentImp)
+void time_elapsed(Implementation currentImp, Config cfg)
 {
     const char* impStr;
     switch (currentImp)
@@ -215,18 +215,18 @@ void time_elapsed(Implementation currentImp)
     }
 
     printf("\n");
-    for (size_t i = 0; i < sizeof(seqTimes); i++)
+    for (size_t i = 0; i < cfg.threads; i++)
     {
         switch (currentImp)
         {
         case SEQ:
-            printf("\nCPU time used for %s with %lld threads: %f seconds", impStr, i + 1, seqTimes[i]);
+            printf("\nCPU time used for %s with %zu threads: %f seconds", impStr, i + 1, seqTimes[i]);
             break;
         case ROW:
-            printf("\nCPU time used for %s with %lld threads: %f seconds", impStr, i + 1, rowTimes[i]);
+            printf("\nCPU time used for %s with %zu threads: %f seconds", impStr, i + 1, rowTimes[i]);
             break;
         case TILED:
-            printf("\nCPU time used for %s with %lld threads: %f seconds", impStr, i + 1, tiledTimes[i]);
+            printf("\nCPU time used for %s with %zu threads: %f seconds", impStr, i + 1, tiledTimes[i]);
             break;
         default:
             impStr = "Unknown";

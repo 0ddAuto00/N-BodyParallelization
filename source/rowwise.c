@@ -58,12 +58,13 @@ void implement_rowwise(Config cfg)
 
 
 /* ---- force computation ------------------------------------------------- */
+//Changed to a stencil application
 void compute_accelerations_rowwise(Body *b, size_t n, const Config *cfg)
 {
     const double eps2 = cfg->softening * cfg->softening;
     size_t i = 0;
     size_t k = 0;
-    // Initialize array of n bodies's pairwise interactions and their accelerations
+// Initialize two domain arrays of n bodies's pairwise interactions and their accelerations
 # pragma omp parallel for shared(b) private(k) schedule(static)
     for (k = 0; k < n; k++)
         b[k].acc = (Vec3){0, 0, 0};
