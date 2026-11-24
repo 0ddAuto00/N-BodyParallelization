@@ -263,7 +263,7 @@ void write_to_csv(Config cfg)
 void plot_csv()
 {
     char cmd[512];
-    snprintf(cmd, sizeof cmd, "python3 \"%s\" \"%s\"", PLOT_SCRIPT, CSV_PATH);
+    snprintf(cmd, sizeof cmd, "py \"%s\" \"%s\"", PLOT_SCRIPT, CSV_PATH);
 
     int rc = system(cmd);
     if (rc != 0) {

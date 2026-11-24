@@ -11,6 +11,24 @@ so each version stays unique.
 If no PR is attatched, remove the `PR#NN` notation. Major changes should get at
 least one other set of eyes before the PR lands.
 
+## 2026.11.24
+
+- Replace the draft all-tiled pairs implementation in `tiled.c` with an optimized version
+  - Bodies are grouped into blocks of `p` (default 256) and the N x N interaction matrix into `p x p` tiles
+  - Only tiles on or above the diagonal are computed: each pair once, N(N-1)/2 evaluations
+  - Tiles are split across threads with OpenMP `schedule(dynamic, 1)`; each thread adds into private \
+ acceleration arrays that are summed at the end, so no locks or atomics are needed
+  - Each timestep (kick, drift, forces, kick) runs in a single OpenMP parallel region
+  - SIMD kernels chosen at run time: AVX-512, AVX2, or a portable C fallback; no compiler flags needed
+  - Run header lines now end with the kernel and tile size used, e.g. `[avx512 double, p=256]`
+  - Every function has a header comment
+  - Matches `sequential.c` to ~1e-14 relative error
+- Add compile/run options for `tiled.c`:
+  - `-DUSE_FLOAT` computes forces in single precision
+  - `-DTILE_SIZE=p` changes the default tile size
+  - `-DTILED_NO_SIMD` builds only the portable kernel
+  - Environment variables `NBODY_TILE=p` (fixed tile size) and `NBODY_SIMD=avx512|avx2|generic` (force a kernel)
+
 ## 2026.11.17
 
 - Add `plot_results.py` that plots `results.csv` on two graphs showing runtime and speedup comparisons
