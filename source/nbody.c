@@ -109,7 +109,8 @@ int load_config(const char *path, Config *cfg)
         else if (strcmp(key, "softening")    == 0) cfg->softening    = strtod(val, NULL);
         else if (strcmp(key, "g")            == 0) cfg->g            = strtod(val, NULL);
         else if (strcmp(key, "seed")         == 0) cfg->seed         = (unsigned)strtoul(val, NULL, 10);
-        else if (strcmp(key, "threads")      == 0) cfg->threads      = strtod(val, NULL);
+        else if (strcmp(key, "threads")      == 0) cfg->threads      = strtoul(val, NULL, 10);
+        else if (strcmp(key, "avg_over")      == 0) cfg->avg_over      = strtoul(val, NULL, 5);
         else fprintf(stderr, "%s:%d: unknown key '%s' (ignored)\n", path, lineno, key);
     }
 

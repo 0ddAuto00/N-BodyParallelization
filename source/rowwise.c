@@ -7,7 +7,7 @@
  * Parameters are read from a key = value config file.
  * 
  * Inital Conditions:
- *  Each body gets a small random velocity (components in ±0.05), 0 initial acceleration,
+ *  Each body gets a small random velocity (components in + - 0.05), 0 initial acceleration,
     and mass 1/n, so total mass is always 1
  */
 
@@ -30,7 +30,7 @@ void implement_rowwise(Config cfg)
             init_bodies(bodies, n);
             compute_accelerations_rowwise(bodies, n, &cfg);
             double e0 = total_energy_rowwise(bodies, n, &cfg);
-            printf("\nN=%zu steps=%zu dt=%g softening=%g G=%g seed=%u  E0=%.9e  Threads=%lld",
+            printf("\nN=%zu steps=%zu dt=%g softening=%g G=%g seed=%u  E0=%.9e  Threads=%zu",
                 n, cfg.num_steps, cfg.dt, cfg.softening, cfg.g, cfg.seed, e0, thread_t);
 
 
@@ -58,32 +58,28 @@ void implement_rowwise(Config cfg)
 
 
 /* ---- force computation ------------------------------------------------- */
-//Changed to a stencil application
+// Changed to compute x y z position and include initialization in parallel
+// better mirrors that in tiled.c. Still calculates N^2 version (not just top)
 void compute_accelerations_rowwise(Body *b, size_t n, const Config *cfg)
 {
     const double eps2 = cfg->softening * cfg->softening;
-    size_t i = 0;
-    size_t k = 0;
-// Initialize two domain arrays of n bodies's pairwise interactions and their accelerations
-# pragma omp parallel for shared(b) private(k) schedule(static)
-    for (k = 0; k < n; k++)
-        b[k].acc = (Vec3){0, 0, 0};
+    const double G = cfg->g;
 
-//each thread gets a row, j is defined within the inner loop
-# pragma omp parallel for shared(b, n, cfg) private(i) schedule(static)
-    for (i = 0; i < n; i++) {
-        for (size_t j = 0; j < n; j++) { //No longer start at diagonal
-            if(j == i) continue;
-            Vec3   d      = vec3_sub(b[j].pos, b[i].pos);
-            double r2     = vec3_dot(d, d) + eps2;
-            double inv_r  = 1.0 / sqrt(r2);
-            double inv_r3 = inv_r * inv_r * inv_r;
+    #pragma omp parallel for schedule(static)
+    for (long long i = 0; i < (long long)n; i++) {
+        const Vec3 pi = b[i].pos;
+        double ax = 0.0, ay = 0.0, az = 0.0;
 
-            // Compute all pairs individually, parallel implementation will
-            // overlap in accessing the j index -> not thread safe
-            b[i].acc = vec3_add(b[i].acc, vec3_scale(d,  cfg->g * b[j].mass * inv_r3));
-            //b[j].acc = vec3_add(b[j].acc, vec3_scale(d, -cfg->g * b[i].mass * inv_r3));
+        for (size_t j = 0; j < n; j++) {
+            if (j == (size_t)i) continue;
+            const double dx = b[j].pos.x - pi.x;
+            const double dy = b[j].pos.y - pi.y;
+            const double dz = b[j].pos.z - pi.z;
+            const double inv = 1.0 / sqrt(dx*dx + dy*dy + dz*dz + eps2);
+            const double s = b[j].mass * inv * inv * inv;
+            ax += dx * s;  ay += dy * s;  az += dz * s;
         }
+        b[i].acc = (Vec3){ G*ax, G*ay, G*az };
     }
 }
 
@@ -94,14 +90,16 @@ void step_leapfrog_rowwise(Body *b, size_t n, const Config *cfg)
 {
     const double dt = cfg->dt;
 
-    for (size_t i = 0; i < n; i++) {
+# pragma omp parallel for shared(b, dt) schedule(static)
+    for (long long i = 0; i < n; i++) {
         b[i].vel = vec3_add(b[i].vel, vec3_scale(b[i].acc, 0.5 * dt));
         b[i].pos = vec3_add(b[i].pos, vec3_scale(b[i].vel, dt));
     }
 
     compute_accelerations_rowwise(b, n, cfg);
 
-    for (size_t i = 0; i < n; i++)
+# pragma omp parallel for shared(b, dt) schedule(static)
+    for (long long i = 0; i < n; i++)
         b[i].vel = vec3_add(b[i].vel, vec3_scale(b[i].acc, 0.5 * dt));
 }
 
@@ -112,9 +110,10 @@ double total_energy_rowwise(const Body *b, size_t n, const Config *cfg)
     const double eps2 = cfg->softening * cfg->softening;
     double ke = 0.0, pe = 0.0;
 
-    for (size_t i = 0; i < n; i++) {
+# pragma omp parallel for schedule(static) reduction(+:ke) reduction(-:pe) 
+    for (long long i = 0; i < n; i++) {
         ke += 0.5 * b[i].mass * vec3_dot(b[i].vel, b[i].vel);
-        for (size_t j = i + 1; j < n; j++) {
+        for (long long j = i + 1; j < n; j++) {
             Vec3 d = vec3_sub(b[j].pos, b[i].pos);
             pe -= cfg->g * b[i].mass * b[j].mass / sqrt(vec3_dot(d, d) + eps2);
         }

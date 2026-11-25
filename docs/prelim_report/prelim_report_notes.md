@@ -41,7 +41,7 @@
 
 ## 5. Specific challenges addressed in the project thus far
 
-- Parallel rowwise implementation cannot compute just an upper matrix because values need to be attibuted to both bodies. This version is not as comparable to sequential because it computes all possible combinations, not just an upper matrix. 
+- Parallel rowwise implementation cannot compute just an upper matrix because values need to be attibuted to both bodies. This version is not as comparable to sequential because it computes all possible combinations, not just an upper matrix.
 - Played with the idea of it being a stencil application but determined this would not be comparable directly to the tiled implementation and is outside proposal scope
 
 ## Guidance for visuals

@@ -43,7 +43,7 @@ void implement_tiled(Config cfg)
             init_bodies(bodies, n);
             compute_accelerations_tiled(bodies, n, &cfg);
             double e0 = total_energy_tiled(bodies, n, &cfg);
-            printf("\nN=%zu steps=%zu dt=%g softening=%g G=%g seed=%u  E0=%.9e  Threads=%lld",
+            printf("\nN=%zu steps=%zu dt=%g softening=%g G=%g seed=%u  E0=%.9e  Threads=%zu",
                 n, cfg.num_steps, cfg.dt, cfg.softening, cfg.g, cfg.seed, e0, thread_t);
 
 
